@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký - My Calendar</title>
+    <link rel="stylesheet" href="asset/css/styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>My Calendar</h1>
+                <p>Quản lý thời gian hiệu quả</p>
+            </div>
+            
+            <form id="registerForm" class="auth-form">
+                <h2>Đăng Ký</h2>
+                
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input 
+                        type="email" 
+                        id="registerEmail" 
+                        required 
+                        placeholder="email@example.com"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerPhone">Số điện thoại</label>
+                    <input 
+                        type="tel" 
+                        id="registerPhone" 
+                        required 
+                        placeholder="0123456789"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="registerPassword">Mật khẩu</label>
+                    <input 
+                        type="password" 
+                        id="registerPassword" 
+                        required 
+                        placeholder="Nhập mật khẩu"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu</label>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        required 
+                        placeholder="Nhập lại mật khẩu"
+                    >
+                </div>
+                
+                <div class="error-message" id="registerError"></div>
+                
+                <button type="submit" class="btn-primary">Đăng Ký</button>
+                
+                <div class="auth-switch">
+                    Đã có tài khoản? <a href="login.html">Đăng nhập</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script type="module" src="asset/js/auth.js"></script>
+</body>
+</html>

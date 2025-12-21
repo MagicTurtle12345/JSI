@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên hệ - My Calendar</title>
+    <link rel="stylesheet" href="asset/css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">My Calendar</a>
+        <ul class="navbar-menu">
+            <li><a href="index.html">Trang chủ</a></li>
+            <li><a href="contact.html" class="active">Liên hệ</a></li>
+            <li id="authLinks">
+                <a href="login.html">Đăng nhập</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="container" style="max-width: 1000px;">
+        <div class="contact-header">
+            <h1>Liên hệ với chúng tôi</h1>
+            <p>Chúng tôi luôn sẵn sàng lắng nghe ý kiến của bạn. Hãy gửi feedback hoặc đề xuất để giúp My Calendar ngày càng tốt hơn!</p>
+        </div>
+
+        <div class="contact-layout">
+            <div class="contact-info">
+                <h2>Thông tin liên hệ</h2>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">📧</div>
+                    <div>
+                        <div class="contact-label">Email</div>
+                        <div class="contact-value">support@mycalendar.com</div>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">📞</div>
+                    <div>
+                        <div class="contact-label">Điện thoại</div>
+                        <div class="contact-value">1900 1234</div>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">📍</div>
+                    <div>
+                        <div class="contact-label">Địa chỉ</div>
+                        <div class="contact-value">123 Nguyễn Huệ, Quận 1, TP.HCM</div>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">⏰</div>
+                    <div>
+                        <div class="contact-label">Giờ làm việc</div>
+                        <div class="contact-value">Thứ 2 - Thứ 6: 8:00 - 17:00<br>Thứ 7: 8:00 - 12:00</div>
+                    </div>
+                </div>
+
+                <div class="social-links">
+                    <h3>Kết nối với chúng tôi</h3>
+                    <div style="display: flex; gap: 16px; margin-top: 16px;">
+                        <a href="#" class="social-icon">Facebook</a>
+                        <a href="#" class="social-icon">Twitter</a>
+                        <a href="#" class="social-icon">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form-section">
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="contactName">Họ và tên *</label>
+                        <input type="text" id="contactName" required placeholder="Nguyễn Văn A">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactEmail">Email *</label>
+                        <input type="email" id="contactEmail" required placeholder="email@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactPhone">Số điện thoại</label>
+                        <input type="tel" id="contactPhone" placeholder="0123456789">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactSubject">Chủ đề *</label>
+                        <select id="contactSubject" required>
+                            <option value="">Chọn chủ đề</option>
+                            <option value="feedback">Feedback</option>
+                            <option value="suggestion">Đề xuất tính năng</option>
+                            <option value="bug">Báo lỗi</option>
+                            <option value="support">Hỗ trợ kỹ thuật</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactMessage">Nội dung *</label>
+                        <textarea id="contactMessage" rows="6" required placeholder="Nhập nội dung tin nhắn của bạn..."></textarea>
+                    </div>
+
+                    <div class="success-message" id="contactSuccess"></div>
+                    <div class="error-message" id="contactError"></div>
+
+                    <button type="submit" class="btn-primary">Gửi tin nhắn</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 My Calendar. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="asset/js/auth.js"></script>
+    <script src="asset/js/contact.js"></script>
+</body>
+</html>

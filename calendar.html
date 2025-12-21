@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch của tôi - My Calendar</title>
+    <link rel="stylesheet" href="asset/css/calendar.css">
+    <link rel="stylesheet" href="asset/css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">My Calendar</a>
+        <ul class="navbar-menu">
+            <li><a href="index.html">Trang chủ</a></li>
+            <li><a href="calendar.html" class="active">Lịch</a></li>
+            <li><a href="report.html">Báo cáo</a></li>
+            <li><a href="user.html" id="userLink">Tài khoản</a></li>
+            <li><a href="#" onclick="logout()">Đăng xuất</a></li>
+        </ul>
+    </nav>
+
+    <div class="calendar-layout">
+        <aside class="calendar-sidebar">
+            <button class="btn-primary" id="createEventBtn">+ Tạo sự kiện mới</button>
+            
+            <div class="sidebar-section">
+                <h3>Danh mục</h3>
+                <div class="category-list">
+                    <label class="category-item">
+                        <input type="checkbox" checked data-category="meeting">
+                        <span class="color-dot" style="background: #ef4444;"></span>
+                        Họp
+                    </label>
+                    <label class="category-item">
+                        <input type="checkbox" checked data-category="work">
+                        <span class="color-dot" style="background: #3b82f6;"></span>
+                        Làm việc
+                    </label>
+                    <label class="category-item">
+                        <input type="checkbox" checked data-category="personal">
+                        <span class="color-dot" style="background: #22c55e;"></span>
+                        Cá nhân
+                    </label>
+                    <label class="category-item">
+                        <input type="checkbox" checked data-category="study">
+                        <span class="color-dot" style="background: #f59e0b;"></span>
+                        Học
+                    </label>
+                    <label class="category-item">
+                        <input type="checkbox" checked data-category="play">
+                        <span class="color-dot" style="background: #a855f7;"></span>
+                        Chơi
+                    </label>
+                    <label class="category-item">
+                        <input type="checkbox" checked data-category="appointment">
+                        <span class="color-dot" style="background: #ec4899;"></span>
+                        Hẹn
+                    </label>
+                </div>
+            </div>
+        </aside>
+
+        <main class="calendar-main">
+            <div class="calendar-header">
+                <button class="btn-icon" id="prevWeek">←</button>
+                <h2 id="weekDisplay">Tuần hiện tại</h2>
+                <button class="btn-icon" id="nextWeek">→</button>
+            </div>
+
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Calendar will be generated here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Event Modal -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Tạo sự kiện mới</h3>
+                <button class="btn-close" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="eventTitle">Tiêu đề *</label>
+                    <input type="text" id="eventTitle" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventDescription">Nội dung</label>
+                    <textarea id="eventDescription" rows="3"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventDate">Ngày *</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventStartTime">Từ *</label>
+                        <input type="time" id="eventStartTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventEndTime">Đến *</label>
+                        <input type="time" id="eventEndTime" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventCategory">Loại lịch *</label>
+                    <select id="eventCategory" required>
+                        <option value="meeting">Họp</option>
+                        <option value="work">Làm việc</option>
+                        <option value="personal">Cá nhân</option>
+                        <option value="study">Học</option>
+                        <option value="play">Chơi</option>
+                        <option value="appointment">Hẹn</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventColor">Màu sắc</label>
+                    <select id="eventColor">
+                        <option value="#ef4444">Đỏ</option>
+                        <option value="#3b82f6">Xanh dương</option>
+                        <option value="#22c55e">Xanh lá</option>
+                        <option value="#f59e0b">Cam</option>
+                        <option value="#a855f7">Tím</option>
+                        <option value="#ec4899">Hồng</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventLocation">Địa điểm</label>
+                    <input type="text" id="eventLocation" placeholder="Văn phòng, Online, v.v.">
+                </div>
+
+                <div class="form-group">
+                    <label for="eventTimezone">Múi giờ</label>
+                    <select id="eventTimezone">
+                        <option value="UTC+7">UTC+7 (Việt Nam)</option>
+                        <option value="UTC+8">UTC+8</option>
+                        <option value="UTC+9">UTC+9</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventFocus">Mức độ tập trung (%)</label>
+                    <input type="number" id="eventFocus" min="0" max="100" value="50">
+                </div>
+
+                <div class="form-group">
+                    <label for="eventTravelTime">Thời gian di chuyển (phút)</label>
+                    <input type="number" id="eventTravelTime" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="eventRepeat">
+                        Lặp lại
+                    </label>
+                </div>
+
+                <div class="form-group" id="repeatOptions" style="display: none;">
+                    <label for="eventRepeatType">Lặp lại mỗi</label>
+                    <select id="eventRepeatType">
+                        <option value="daily">Ngày</option>
+                        <option value="weekly">Tuần</option>
+                        <option value="monthly">Tháng</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="eventShowEmail">
+                        Hiển thị email người dùng trên sự kiện
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventNotification">Phương thức thông báo</label>
+                    <select id="eventNotification">
+                        <option value="none">Không</option>
+                        <option value="web">Thông báo web</option>
+                        <option value="email">Email</option>
+                        <option value="both">Cả hai</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="eventNotificationTime">Thông báo trước (phút)</label>
+                    <input type="number" id="eventNotificationTime" min="0" value="15">
+                </div>
+
+                <div class="form-group">
+                    <label for="eventInvites">Mời qua email (cách nhau bởi dấu phẩy)</label>
+                    <input type="text" id="eventInvites" placeholder="email1@example.com, email2@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="eventAttachment">Đính kèm file</label>
+                    <input type="file" id="eventAttachment" multiple>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn-delete" id="deleteEventBtn" style="display: none;">Xóa</button>
+                    <div style="flex: 1;"></div>
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Hủy</button>
+                    <button type="submit" class="btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="asset/js/auth.js"></script>
+    <script src="asset/js/calendar.js"></script>
+</body>
+</html>

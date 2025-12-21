@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Calendar - Quản lý thời gian hiệu quả</title>
+    <link rel="stylesheet" href="asset/css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">My Calendar</a>
+        <ul class="navbar-menu">
+            <li><a href="index.html" class="active">Trang chủ</a></li>
+            <li><a href="calendar.html" >Lịch</a></li>
+            <li><a href="report.html">Báo cáo</a></li>
+            <li><a href="user.html" id="userLink">Tài khoản</a></li>
+            <li><a href="#" onclick="logout()">Đăng xuất</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Quản lý thời gian thông minh với My Calendar</h1>
+            <p>Lên lịch công việc, theo dõi tiến độ và cải thiện hiệu suất làm việc của bạn</p>
+            <a href="calendar.html" class="btn-primary">Bắt đầu ngay</a>
+        </div>
+    </section>
+
+    <section class="container">
+        <h2 style="text-align: center; margin-bottom: 40px; font-size: 32px;">Tính năng nổi bật</h2>
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">📅</div>
+                <h3>Lịch tuần linh hoạt</h3>
+                <p>Xem và quản lý lịch trình theo tuần với giao diện trực quan, dễ sử dụng</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⏰</div>
+                <h3>Nhắc nhở thông minh</h3>
+                <p>Nhận thông báo qua email hoặc web trước khi sự kiện diễn ra</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>Mời người tham gia</h3>
+                <p>Chia sẻ lịch và mời người khác tham gia sự kiện của bạn</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3>Lặp lại tự động</h3>
+                <p>Tạo các sự kiện lặp lại theo ngày, tuần hoặc tháng một cách dễ dàng</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Báo cáo chi tiết</h3>
+                <p>Phân tích thời gian sử dụng và đánh giá sự cân bằng công việc - cuộc sống</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Tùy chỉnh màu sắc</h3>
+                <p>Phân loại sự kiện với màu sắc và danh mục khác nhau</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="container" style="margin-top: 80px;">
+        <h2 style="text-align: center; margin-bottom: 40px; font-size: 32px;">Thành tích của chúng tôi</h2>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">10,000+</div>
+                <div class="stat-label">Người dùng</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">50,000+</div>
+                <div class="stat-label">Sự kiện được tạo</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">95%</div>
+                <div class="stat-label">Mức độ hài lòng</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Hỗ trợ</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Sẵn sàng quản lý thời gian hiệu quả?</h2>
+            <p>Tham gia cùng hàng nghìn người dùng đã cải thiện năng suất với My Calendar</p>
+            <a href="register.html" class="btn-primary">Đăng ký miễn phí</a>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 My Calendar. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="asset/js/auth.js"></script>
+    <script>
+        // Update navbar based on auth status
+        const authLinks = document.getElementById('authLinks');
+        const currentUser = getCurrentUser();
+        
+        if (currentUser) {
+            authLinks.innerHTML = `
+                <a href="calendar.html">Lịch của tôi</a>
+                <a href="user.html">
+                    <img src="${currentUser.avatar}" alt="Avatar" class="user-avatar">
+                </a>
+            `;
+        }
+    </script>
+</body>
+</html>
