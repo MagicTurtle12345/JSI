@@ -1,12 +1,16 @@
-// Nhập các hàm cần thiết từ Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-    getAuth, 
-    createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword, 
-    signOut, 
-    onAuthStateChanged 
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
@@ -16,77 +20,76 @@ const firebaseConfig = {
   storageBucket: "mycalendar-c7e21.firebasestorage.app",
   messagingSenderId: "584205292158",
   appId: "1:584205292158:web:7ff34d63dc91f648273e2f",
-  measurementId: "G-XXFHVW46DD"
+  measurementId: "G-XXFHVW46DD",
 };
-
-// Initialize Firebase
+// Khởi tạo
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// 2. Hàm Đăng ký
-async function registerUser(email, password) {
-    try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        console.log("Đăng ký thành công:", userCredential.user);
-        window.location.href = "index.html";
-    } catch (error) {
-        alert("Lỗi đăng ký: " + error.message);
-    }
-}
+// Xuất ra window để các file khác (calendar.js, report.js) dùng chung
+window.firebaseAuth = auth;
+window.db = db;
 
-import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// --- HÀM ĐĂNG KÝ ---
+window.handleRegister = async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("registerEmail").value;
+  const password = document.getElementById("registerPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword")?.value;
 
-async function registerUser(email, password, role = "user") { // Mặc định là user
-    try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+  if (confirmPassword && password !== confirmPassword) {
+    alert("Mật khẩu xác nhận không khớp!");
+    return;
+  }
 
-        // Lưu thông tin role vào Firestore
-        await setDoc(doc(window.db, "users", user.uid), {
-            email: email,
-            role: role // 'admin' hoặc 'user'
-        });
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredential.user;
 
-        window.location.href = "index.html";
-    } catch (error) {
-        alert("Lỗi: " + error.message);
-    }
-}
-
-// 3. Hàm Đăng nhập
-async function loginUser(email, password) {
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = "index.html";
-    } catch (error) {
-        alert("Lỗi đăng nhập: " + error.message);
-    }
-}
-
-// 4. Hàm Đăng xuất
-function logout() {
-    signOut(auth).then(() => {
-        window.location.href = "login.html";
+    // Tạo role mặc định trong Firestore
+    await setDoc(doc(db, "users", user.uid), {
+      email: email,
+      role: "user",
+      createdAt: new Date().toISOString(),
     });
-}
 
-// 5. Kiểm tra trạng thái đăng nhập (Thay cho getCurrentUser)
+    alert("Đăng ký thành công!");
+    window.location.href = "calendar.html";
+  } catch (error) {
+    alert("Lỗi đăng ký: " + error.message);
+  }
+};
+
+// --- HÀM ĐĂNG NHẬP ---
+window.handleLogin = async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = "calendar.html";
+  } catch (error) {
+    alert("Lỗi đăng nhập: " + error.message);
+  }
+};
+
+// --- HÀM ĐĂNG XUẤT ---
+window.logout = () => {
+  signOut(auth).then(() => {
+    window.location.href = "login.html";
+  });
+};
+
+// --- THEO DÕI TRẠNG THÁI ---
 onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // Người dùng đã đăng nhập
-        console.log("User hiện tại:", user.email);
-        // Bạn có thể lưu tạm email vào biến global để các file js khác dùng
-        window.currentUser = user; 
-    } else {
-        // Người dùng chưa đăng nhập
-        if (window.location.pathname.includes("calendar.html") || window.location.pathname.includes("report.html")) {
-            window.location.href = "login.html";
-        }
-    }
+  const userLink = document.getElementById("userLink");
+  if (user && userLink) {
+    userLink.textContent = user.email.split("@")[0];
+  }
 });
-
-// Xuất các hàm để sử dụng ở file HTML
-window.loginUser = loginUser;
-window.registerUser = registerUser;
-window.logout = logout;
-

@@ -331,3 +331,15 @@
     grid-template-columns: 1fr;
   }
 }
+.event-item {
+    margin-bottom: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    background: rgba(0,0,0,0.05); /* Hoặc màu nhạt của category */
+}
+.event-time {
+    font-weight: bold;
+    font-size: 10px;
+}

@@ -203,7 +203,7 @@
                 </div>
 
                 <div class="modal-actions">
-                    <button type="button" class="btn-delete" id="deleteEventBtn" style="display: none;">Xóa</button>
+                    <button type="button" class="btn-delete" id="deleteEventBtn" onclick="handleDeleteEvent()">Xóa</button>
                     <div style="flex: 1;"></div>
                     <button type="button" class="btn-secondary" onclick="closeModal()">Hủy</button>
                     <button type="submit" class="btn-primary">Lưu</button>
@@ -213,6 +213,6 @@
     </div>
 
     <script type="module" src="asset/js/auth.js"></script>
-    <script src="asset/js/calendar.js"></script>
+    <script type="module" src="asset/js/calendar.js"></script>
 </body>
 </html>
