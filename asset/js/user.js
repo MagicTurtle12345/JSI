@@ -1,166 +1,111 @@
-// Load user profile
-function loadUserProfile() {
-  const currentUser = getCurrentUser()
-  if (!currentUser) {
-    window.location.href = "login.html"
-    return
-  }
+import { getAuth, onAuthStateChanged, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  document.getElementById("userEmail").value = currentUser.email
-  document.getElementById("userPhone").value = currentUser.phone || ""
-  document.getElementById("userRole").value = currentUser.role === "admin" ? "Quản trị viên" : "Người dùng"
-  document.getElementById("avatarPreview").src =
-    currentUser.avatar ||
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/500px-Default_pfp.svg.png?20220226140232"
-}
+// BẮT BUỘC PHẢI CÓ CONFIG Ở ĐÂY
+const firebaseConfig = {
+  apiKey: "AIzaSyCISk54t_1O9IJh9EiV06Jha2G8Rxu2w4c",
+  authDomain: "mycalendar-c7e21.firebaseapp.com",
+  projectId: "mycalendar-c7e21",
+  storageBucket: "mycalendar-c7e21.firebasestorage.app",
+  messagingSenderId: "584205292158",
+  appId: "1:584205292158:web:7ff34d63dc91f648273e2f"
+};
 
-// Update profile
-function updateProfile() {
-  const currentUser = getCurrentUser()
-  if (!currentUser) return
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  const phone = document.getElementById("userPhone").value
-
-  // Update user data
-  const users = getUsers()
-  const userIndex = users.findIndex((u) => u.email === currentUser.email)
-
-  if (userIndex !== -1) {
-    users[userIndex].phone = phone
-    users[userIndex].avatar = currentUser.avatar
-    saveUsers(users)
-
-    // Update current user session
-    const updatedUser = { ...users[userIndex] }
-    delete updatedUser.password
-    saveCurrentUser(updatedUser)
-
-    alert("Cập nhật thông tin thành công!")
-    loadUserProfile()
-  }
-}
-
-// Change password
-function changePassword() {
-  const currentUser = getCurrentUser()
-  if (!currentUser) return
-
-  const currentPassword = document.getElementById("currentPassword").value
-  const newPassword = document.getElementById("newPassword").value
-  const confirmNewPassword = document.getElementById("confirmNewPassword").value
-
-  const errorEl = document.getElementById("passwordError")
-  const successEl = document.getElementById("passwordSuccess")
-
-  // Clear messages
-  errorEl.classList.remove("show")
-  successEl.classList.remove("show")
-
-  // Validation
-  if (!currentPassword || !newPassword || !confirmNewPassword) {
-    showError("passwordError", "Vui lòng điền đầy đủ thông tin!")
-    return
-  }
-
-  if (newPassword !== confirmNewPassword) {
-    showError("passwordError", "Mật khẩu mới không khớp!")
-    return
-  }
-
-  if (newPassword.length < 6) {
-    showError("passwordError", "Mật khẩu phải có ít nhất 6 ký tự!")
-    return
-  }
-
-  // Verify current password
-  const users = getUsers()
-  const user = users.find((u) => u.email === currentUser.email)
-
-  if (!user || user.password !== currentPassword) {
-    showError("passwordError", "Mật khẩu hiện tại không đúng!")
-    return
-  }
-
-  // Update password
-  const userIndex = users.findIndex((u) => u.email === currentUser.email)
-  if (userIndex !== -1) {
-    users[userIndex].password = newPassword
-    saveUsers(users)
-
-    // Show success
-    successEl.textContent = "Đổi mật khẩu thành công!"
-    successEl.classList.add("show")
-
-    // Clear form
-    document.getElementById("currentPassword").value = ""
-    document.getElementById("newPassword").value = ""
-    document.getElementById("confirmNewPassword").value = ""
-
-    setTimeout(() => {
-      successEl.classList.remove("show")
-    }, 3000)
-  }
-}
-
-// Handle avatar upload
-document.getElementById("avatarUpload").addEventListener("change", (e) => {
-  const file = e.target.files[0]
-  if (!file) return
-
-  // Check file size (2MB max)
-  if (file.size > 2 * 1024 * 1024) {
-    alert("File quá lớn! Vui lòng chọn ảnh nhỏ hơn 2MB.")
-    return
-  }
-
-  // Read and preview
-  const reader = new FileReader()
-  reader.onload = (event) => {
-    const avatarUrl = event.target.result
-    document.getElementById("avatarPreview").src = avatarUrl
-
-    // Save to user data
-    const currentUser = getCurrentUser()
-    if (!currentUser) return
-
-    const users = getUsers()
-    const userIndex = users.findIndex((u) => u.email === currentUser.email)
-
-    if (userIndex !== -1) {
-      users[userIndex].avatar = avatarUrl
-      saveUsers(users)
-
-      // Update current user session
-      currentUser.avatar = avatarUrl
-      saveCurrentUser(currentUser)
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+            const data = userDoc.data();
+            // Kiểm tra role chính xác
+            document.getElementById("userRole").value = data.role === "admin" ? "Quản trị viên" : "Người dùng";
+        }
     }
-  }
+});
 
-  reader.readAsDataURL(file)
-})
 
-// Load profile on page load
-loadUserProfile()
+// --- CẤU HÌNH ---
+const CLOUD_NAME = "da1kzeqey"; // Thay bằng Cloud Name của bạn
+const UPLOAD_PRESET = "my_preset"; // Thay bằng Unsigned Preset của bạn
 
-// Declare functions to fix lint errors
-function getCurrentUser() {
-  // Implementation for getCurrentUser
-}
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        const userLink = document.getElementById("userLink");
+        if (userLink) userLink.textContent = user.email.split('@')[0];
+        document.getElementById("userEmail").value = user.email;
+        
+        try {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                document.getElementById("userPhone").value = data.phone || "";
+                document.getElementById("userRole").value = data.role === "admin" ? "Quản trị viên" : "Người dùng";
+                document.getElementById("avatarPreview").src = data.avatar || "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/500px-Default_pfp.svg.png";
+            } else {
+                console.error("Không tìm thấy document cho UID:", user.uid);
+            }
+        } catch (e) { console.error("Lỗi tải dữ liệu user:", e); }
+    } else {
+        window.location.href = "login.html";
+    }
+});
 
-function getUsers() {
-  // Implementation for getUsers
-}
+document.getElementById("avatarUpload").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-function saveUsers(users) {
-  // Implementation for saveUsers
-}
+    const preview = document.getElementById("avatarPreview");
+    const oldSrc = preview.src;
+    preview.style.opacity = "0.5";
 
-function saveCurrentUser(user) {
-  // Implementation for saveCurrentUser
-}
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
 
-function showError(elementId, message) {
-  const errorEl = document.getElementById(elementId)
-  errorEl.textContent = message
-  errorEl.classList.add("show")
-}
+    try {
+        // BƯỚC 1: UPLOAD CLOUDINARY
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(`Cloudinary: ${errData.error.message}`);
+        }
+
+        const data = await response.json();
+        const avatarUrl = data.secure_url;
+
+        // BƯỚC 2: CẬP NHẬT FIRESTORE
+        const user = auth.currentUser;
+        if (user) {
+            const userRef = doc(db, "users", user.uid);
+            
+            // Kiểm tra xem document có tồn tại trước khi update không
+            const checkDoc = await getDoc(userRef);
+            if (!checkDoc.exists()) {
+                throw new Error("Tài khoản của bạn chưa có dữ liệu trên hệ thống (Firestore). Hãy thử đăng ký lại.");
+            }
+
+            await updateDoc(userRef, { avatar: avatarUrl });
+            
+            // BƯỚC 3: CẬP NHẬT GIAO DIỆN
+            preview.src = avatarUrl;
+            preview.style.opacity = "1";
+            alert("Cập nhật thành công!");
+        }
+
+    } catch (error) {
+        console.error("DEBUG LỖI:", error);
+        alert("LỖI CỤ THỂ: " + error.message);
+        preview.src = oldSrc;
+        preview.style.opacity = "1";
+    }
+});

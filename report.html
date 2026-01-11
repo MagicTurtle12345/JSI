@@ -1,129 +1,167 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Báo cáo - My Calendar</title>
-    <link rel="stylesheet" href="asset/css/styles.css">
+    <link rel="stylesheet" href="asset/css/styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <nav class="navbar">
-        <a href="index.html" class="navbar-brand">My Calendar</a>
-        <ul class="navbar-menu">
-            <li><a href="index.html">Trang chủ</a></li>
-            <li><a href="calendar.html">Lịch</a></li>
-            <li><a href="report.html" class="active">Báo cáo</a></li>
-            <li><a href="user.html">Tài khoản</a></li>
-            <li><a href="#" onclick="logout()">Đăng xuất</a></li>
-        </ul>
+      <a href="index.html" class="navbar-brand">My Calendar</a>
+      <ul class="navbar-menu">
+        <li><a href="index.html">Trang chủ</a></li>
+        <li><a href="calendar.html">Lịch</a></li>
+        <li><a href="report.html" class="active">Báo cáo</a></li>
+        <li><a href="contact.html">Liên hệ</a></li>
+        <li>
+          <a href="user.html">Tài khoản (<span id="userLink">...</span>)</a>
+        </li>
+        <li><a href="#" onclick="logout()">Đăng xuất</a></li>
+      </ul>
     </nav>
 
     <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
-            <h1>Báo cáo thời gian</h1>
-            <div style="display: flex; gap: 12px;">
-                <select id="reportPeriod" class="report-select">
-                    <option value="today">Hôm nay</option>
-                    <option value="week">Tuần này</option>
-                    <option value="month">Tháng này</option>
-                </select>
-                <button class="btn-primary" onclick="generateReport()">Tạo báo cáo</button>
-            </div>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 32px;
+        "
+      >
+        <h1>Báo cáo thời gian</h1>
+        <div style="display: flex; gap: 12px">
+          <select id="reportPeriod" class="report-select">
+            <option value="today">Hôm nay</option>
+            <option value="week">Tuần này</option>
+            <option value="month">Tháng này</option>
+          </select>
+          <button class="btn-primary" onclick="generateReport()">
+            Tạo báo cáo
+          </button>
         </div>
+      </div>
 
-        <!-- Summary Cards -->
-        <div class="report-cards">
-            <div class="report-card">
-                <div class="report-card-icon">⏰</div>
-                <div>
-                    <div class="report-card-label">Tổng thời gian</div>
-                    <div class="report-card-value" id="totalTime">0h</div>
-                </div>
-            </div>
-            <div class="report-card">
-                <div class="report-card-icon">📅</div>
-                <div>
-                    <div class="report-card-label">Số sự kiện</div>
-                    <div class="report-card-value" id="totalEvents">0</div>
-                </div>
-            </div>
-            <div class="report-card">
-                <div class="report-card-icon">💼</div>
-                <div>
-                    <div class="report-card-label">Thời gian làm việc</div>
-                    <div class="report-card-value" id="workTime">0h</div>
-                </div>
-            </div>
-            <div class="report-card">
-                <div class="report-card-icon">😴</div>
-                <div>
-                    <div class="report-card-label">Thời gian nghỉ ngơi</div>
-                    <div class="report-card-value" id="restTime">0h</div>
-                </div>
-            </div>
+      <!-- Summary Cards -->
+      <div class="report-cards">
+        <div class="report-card">
+          <div class="report-card-icon">⏰</div>
+          <div>
+            <div class="report-card-label">Tổng thời gian</div>
+            <div class="report-card-value" id="totalTime">0h</div>
+          </div>
         </div>
-
-        <!-- Charts -->
-        <div class="report-section">
-            <h2 style="margin-bottom: 24px;">Phân bổ thời gian theo loại công việc</h2>
-            <div class="chart-container">
-                <canvas id="categoryChart"></canvas>
-            </div>
+        <div class="report-card">
+          <div class="report-card-icon">📅</div>
+          <div>
+            <div class="report-card-label">Số sự kiện</div>
+            <div class="report-card-value" id="totalEvents">0</div>
+          </div>
         </div>
-
-        <div class="report-section">
-            <h2 style="margin-bottom: 24px;">Thời gian sử dụng trong ngày</h2>
-            <div class="chart-container">
-                <canvas id="dailyChart"></canvas>
-            </div>
+        <div class="report-card">
+          <div class="report-card-icon">💼</div>
+          <div>
+            <div class="report-card-label">Thời gian làm việc</div>
+            <div class="report-card-value" id="workTime">0h</div>
+          </div>
         </div>
-
-        <div class="report-section">
-            <h2 style="margin-bottom: 24px;">Mức độ tập trung trung bình</h2>
-            <div class="chart-container">
-                <canvas id="focusChart"></canvas>
-            </div>
+        <div class="report-card">
+          <div class="report-card-icon">😴</div>
+          <div>
+            <div class="report-card-label">Thời gian nghỉ ngơi</div>
+            <div class="report-card-value" id="restTime">0h</div>
+          </div>
         </div>
+      </div>
 
-        <!-- Work-Life Balance -->
-        <div class="report-section">
-            <h2 style="margin-bottom: 24px;">Đánh giá cân bằng công việc - cuộc sống</h2>
-            <div class="balance-section" id="balanceSection">
-                <div class="balance-indicator">
-                    <div class="balance-bar">
-                        <div class="balance-fill" id="balanceFill"></div>
-                    </div>
-                    <div class="balance-labels">
-                        <span>Công việc</span>
-                        <span>Cân bằng</span>
-                        <span>Cá nhân</span>
-                    </div>
-                </div>
-                
-                <div class="balance-assessment" id="balanceAssessment">
-                    <!-- Assessment will be generated here -->
-                </div>
-
-                <!-- Admin can edit assessment -->
-                <div id="adminAssessmentSection" style="display: none; margin-top: 24px;">
-                    <h3 style="font-size: 18px; margin-bottom: 16px;">Chỉnh sửa đánh giá (Chỉ Admin)</h3>
-                    <textarea id="adminAssessmentText" rows="5" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 14px;"></textarea>
-                    <button class="btn-primary" onclick="saveAssessment()" style="margin-top: 12px; width: auto;">Lưu đánh giá</button>
-                </div>
-            </div>
+      <!-- Charts -->
+      <div class="report-section">
+        <h2 style="margin-bottom: 24px">
+          Phân bổ thời gian theo loại công việc
+        </h2>
+        <div class="chart-container">
+          <canvas id="categoryChart"></canvas>
         </div>
+      </div>
 
-        <!-- Detailed Breakdown -->
-        <div class="report-section">
-            <h2 style="margin-bottom: 24px;">Chi tiết thời gian theo danh mục</h2>
-            <div class="time-breakdown" id="timeBreakdown">
-                <!-- Will be generated dynamically -->
-            </div>
+      <div class="report-section">
+        <h2 style="margin-bottom: 24px">Thời gian sử dụng trong ngày</h2>
+        <div class="chart-container">
+          <canvas id="dailyChart"></canvas>
         </div>
+      </div>
+
+      <div class="report-section">
+        <h2 style="margin-bottom: 24px">Mức độ tập trung trung bình</h2>
+        <div class="chart-container">
+          <canvas id="focusChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Work-Life Balance -->
+      <div class="report-section">
+        <h2 style="margin-bottom: 24px">
+          Đánh giá cân bằng công việc - cuộc sống
+        </h2>
+        <div class="balance-section" id="balanceSection">
+          <div class="balance-indicator">
+            <div class="balance-bar">
+              <div class="balance-fill" id="balanceFill"></div>
+            </div>
+            <div class="balance-labels">
+              <span>Công việc</span>
+              <span>Cân bằng</span>
+              <span>Cá nhân</span>
+            </div>
+          </div>
+
+          <div class="balance-assessment" id="balanceAssessment">
+            <!-- Assessment will be generated here -->
+          </div>
+
+          <!-- Admin can edit assessment -->
+          <div
+            id="adminAssessmentSection"
+            style="display: none; margin-top: 24px"
+          >
+            <h3 style="font-size: 18px; margin-bottom: 16px">
+              Chỉnh sửa đánh giá (Chỉ Admin)
+            </h3>
+            <textarea
+              id="adminAssessmentText"
+              rows="5"
+              style="
+                width: 100%;
+                padding: 12px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                font-family: inherit;
+                font-size: 14px;
+              "
+            ></textarea>
+            <button
+              class="btn-primary"
+              onclick="saveAssessment()"
+              style="margin-top: 12px; width: auto"
+            >
+              Lưu đánh giá
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Breakdown -->
+      <div class="report-section">
+        <h2 style="margin-bottom: 24px">Chi tiết thời gian theo danh mục</h2>
+        <div class="time-breakdown" id="timeBreakdown">
+          <!-- Will be generated dynamically -->
+        </div>
+      </div>
     </div>
 
     <script type="module" src="asset/js/auth.js"></script>
-    <script src="asset/js/report.js"></script>
-</body>
+    <script type="module" src="asset/js/report.js"></script>
+  </body>
 </html>

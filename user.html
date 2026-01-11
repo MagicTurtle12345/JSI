@@ -1,86 +1,127 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tài khoản - My Calendar</title>
-    <link rel="stylesheet" href="asset/css/styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="asset/css/styles.css" />
+  </head>
+  <body>
     <nav class="navbar">
-        <a href="index.html" class="navbar-brand">My Calendar</a>
-        <ul class="navbar-menu">
-            <li><a href="index.html">Trang chủ</a></li>
-            <li><a href="calendar.html">Lịch</a></li>
-            <li><a href="report.html">Báo cáo</a></li>
-            <li><a href="user.html" class="active">Tài khoản</a></li>
-            <li><a href="#" onclick="logout()">Đăng xuất</a></li>
-        </ul>
+      <a href="index.html" class="navbar-brand">My Calendar</a>
+      <ul class="navbar-menu">
+        <li><a href="index.html">Trang chủ</a></li>
+        <li><a href="calendar.html">Lịch</a></li>
+        <li><a href="report.html">Báo cáo</a></li>
+        <li><a href="contact.html">Liên hệ</a></li>
+        <li>
+          <a href="user.html" class="active"
+            >Tài khoản (<span id="userLink">...</span>)</a
+          >
+        </li>
+        <li><a href="#" onclick="logout()">Đăng xuất</a></li>
+      </ul>
     </nav>
 
-    <div class="container" style="max-width: 800px;">
-        <h1 style="margin-bottom: 32px;">Thông tin tài khoản</h1>
+    <div class="container" style="max-width: 800px">
+      <h1 style="margin-bottom: 32px">Thông tin tài khoản</h1>
 
-        <div class="profile-section">
-            <div class="profile-avatar-section">
-                <img src="/placeholder.svg" alt="Avatar" id="avatarPreview" class="profile-avatar">
-                <div>
-                    <label for="avatarUpload" class="btn-primary" style="display: inline-block; cursor: pointer;">
-                        Đổi ảnh đại diện
-                    </label>
-                    <input type="file" id="avatarUpload" accept="image/*" style="display: none;">
-                    <p style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">
-                        JPG, PNG. Tối đa 2MB
-                    </p>
-                </div>
-            </div>
-
-            <div class="profile-info">
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="userEmail" disabled>
-                </div>
-
-                <div class="form-group">
-                    <label for="userPhone">Số điện thoại</label>
-                    <input type="tel" id="userPhone" placeholder="0123456789">
-                </div>
-
-                <div class="form-group">
-                    <label>Vai trò</label>
-                    <input type="text" id="userRole" disabled>
-                </div>
-
-                <button class="btn-primary" onclick="updateProfile()">Cập nhật thông tin</button>
-            </div>
+      <div class="profile-section">
+        <div class="profile-avatar-section">
+          <img
+            src="/placeholder.svg"
+            alt="Avatar"
+            id="avatarPreview"
+            class="profile-avatar"
+          />
+          <div>
+            <label
+              for="avatarUpload"
+              class="btn-primary"
+              style="display: inline-block; cursor: pointer"
+            >
+              Đổi ảnh đại diện
+            </label>
+            <input
+              type="file"
+              id="avatarUpload"
+              accept="image/*"
+              style="display: none"
+            />
+            <p
+              style="
+                font-size: 14px;
+                color: var(--text-secondary);
+                margin-top: 8px;
+              "
+            >
+              JPG, PNG. Tối đa 2MB
+            </p>
+          </div>
         </div>
 
-        <div class="profile-section" style="margin-top: 40px;">
-            <h2 style="margin-bottom: 24px; font-size: 20px;">Đổi mật khẩu</h2>
+        <div class="profile-info">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="userEmail" disabled />
+          </div>
 
-            <div class="form-group">
-                <label for="currentPassword">Mật khẩu hiện tại</label>
-                <input type="password" id="currentPassword" placeholder="Nhập mật khẩu hiện tại">
-            </div>
+          <div class="form-group">
+            <label for="userPhone">Số điện thoại</label>
+            <input type="tel" id="userPhone" placeholder="0123456789" />
+          </div>
 
-            <div class="form-group">
-                <label for="newPassword">Mật khẩu mới</label>
-                <input type="password" id="newPassword" placeholder="Nhập mật khẩu mới">
-            </div>
+          <div class="form-group">
+            <label>Vai trò</label>
+            <input type="text" id="userRole" disabled />
+          </div>
 
-            <div class="form-group">
-                <label for="confirmNewPassword">Xác nhận mật khẩu mới</label>
-                <input type="password" id="confirmNewPassword" placeholder="Nhập lại mật khẩu mới">
-            </div>
-
-            <div class="error-message" id="passwordError"></div>
-            <div class="success-message" id="passwordSuccess"></div>
-
-            <button class="btn-primary" onclick="changePassword()">Đổi mật khẩu</button>
+          <button class="btn-primary" onclick="updateProfile()">
+            Cập nhật thông tin
+          </button>
         </div>
+      </div>
+
+      <div class="profile-section" style="margin-top: 40px">
+        <h2 style="margin-bottom: 24px; font-size: 20px">Đổi mật khẩu</h2>
+
+        <div class="form-group">
+          <label for="currentPassword">Mật khẩu hiện tại</label>
+          <input
+            type="password"
+            id="currentPassword"
+            placeholder="Nhập mật khẩu hiện tại"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">Mật khẩu mới</label>
+          <input
+            type="password"
+            id="newPassword"
+            placeholder="Nhập mật khẩu mới"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="confirmNewPassword">Xác nhận mật khẩu mới</label>
+          <input
+            type="password"
+            id="confirmNewPassword"
+            placeholder="Nhập lại mật khẩu mới"
+          />
+        </div>
+
+        <div class="error-message" id="passwordError"></div>
+        <div class="success-message" id="passwordSuccess"></div>
+
+        <button class="btn-primary" onclick="changePassword()">
+          Đổi mật khẩu
+        </button>
+      </div>
     </div>
 
     <script type="module" src="asset/js/auth.js"></script>
-    <script src="asset/js/user.js"></script>
-</body>
+    <script type="module" src="asset/js/user.js"></script>
+  </body>
 </html>

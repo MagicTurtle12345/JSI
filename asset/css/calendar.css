@@ -343,3 +343,201 @@
     font-weight: bold;
     font-size: 10px;
 }
+#calendarGrid {
+    display: flex; /* Thay đổi từ grid sang flex để dễ kiểm soát cột thời gian */
+    min-height: 1200px; /* Đảm bảo lịch đủ dài cho 24 giờ */
+}
+
+.time-column {
+    width: 60px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+}
+
+.hour-label, .hour-cell {
+    height: 50px; /* Độ cao mỗi khung giờ, giúp lịch không bị sát */
+    border-bottom: 1px id var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.calendar-day {
+    flex: 1;
+    position: relative;
+    border-right: 1px solid var(--border);
+}
+
+.events-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Cho phép click xuyên qua nếu cần */
+}
+
+.event-item {
+    position: absolute; /* Để đặt sự kiện đúng khung giờ */
+    left: 4px;
+    right: 4px;
+    pointer-events: auto;
+    z-index: 10;
+}
+.time-slot, .hour-grid-cell {
+    height: 50px; /* Điều chỉnh chiều cao này để giãn lịch ra */
+    border-bottom: 1px solid #eee;
+}
+.day-events-container {
+    position: relative;
+    height: 1200px; /* 24 giờ * 50px */
+}
+:root {
+    --border: #e0e0e0;
+    --text-secondary: #70757a;
+    --primary: #1a73e8;
+    --surface: #ffffff;
+}
+
+#calendarGrid {
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow-x: auto;
+    min-width: 900px;
+}
+
+/* Cột thời gian bên trái */
+.time-column {
+    width: 65px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border);
+    background: #f8f9fa;
+}
+
+.time-header-slot {
+    height: 60px; /* Khớp với chiều cao day-header */
+    border-bottom: 2px solid var(--border);
+}
+
+.time-slot {
+    height: 50px; /* HOUR_HEIGHT */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 5px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid transparent;
+}
+
+/* Cột ngày */
+.calendar-day {
+    flex: 1;
+    min-width: 120px;
+    border-right: 1px solid var(--border);
+}
+
+.day-header {
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid var(--border);
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.day-name { font-size: 11px; text-transform: uppercase; color: var(--text-secondary); }
+.day-number { font-size: 20px; }
+
+/* Container chứa các ô lưới và sự kiện */
+.day-events-container {
+    position: relative;
+    height: 1200px; /* 24 giờ * 50px */
+}
+
+.hour-grid-cell {
+    height: 50px; /* HOUR_HEIGHT */
+    border-bottom: 1px solid #eee;
+    box-sizing: border-box;
+}
+
+/* Item sự kiện */
+.event-item {
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 12px;
+    color: #3c4043;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    z-index: 2;
+    transition: transform 0.1s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.event-item:hover {
+    transform: scale(1.02);
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.event-time {
+    font-weight: bold;
+    font-size: 10px;
+    margin-bottom: 2px;
+}
+
+.event-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.today {
+    background-color: #f8faff;
+}
+.today .day-number {
+    background: var(--primary);
+    color: white;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+.view-navigation {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.month-select-input {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px;
+    font-family: inherit;
+    cursor: pointer;
+    background: #fff;
+}
+
+.month-select-input:hover {
+    border-color: var(--primary);
+}
+
+#currentMonthYear {
+    min-width: 150px;
+    text-align: center;
+}
