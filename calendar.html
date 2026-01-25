@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
@@ -22,13 +22,30 @@
       </ul>
     </nav>
     <div class="view-navigation">
-    <button id="prevWeek" class="nav-btn">&lt;</button>
-    <div style="display: flex; flex-direction: column; align-items: center;">
+      <div class="nav-left">
+        <button id="todayBtn" class="btn-secondary">Hôm nay</button>
+        <div class="nav-arrows">
+          <button id="prevBtn" class="btn-icon">&lt;</button>
+          <button id="nextBtn" class="btn-icon">&gt;</button>
+        </div>
         <h2 id="currentMonthYear">Tháng ..., 202x</h2>
-        <input type="date" id="jumpToDate" style="font-size: 12px; padding: 2px; border: 1px solid #ccc; border-radius: 4px; margin-top: 4px;">
+      </div>
+
+      <div class="nav-right">
+        <div class="date-picker-container">
+          <input
+            type="date"
+            id="jumpToDate"
+            class="jump-date-input"
+            title="Đi đến ngày"
+          />
+        </div>
+        <select id="viewModeSelect" class="view-mode-select">
+          <option value="week">Tuần</option>
+          <option value="day">Ngày</option>
+        </select>
+      </div>
     </div>
-    <button id="nextWeek" class="nav-btn">&gt;</button>
-</div>
 
     <div class="calendar-layout">
       <aside class="calendar-sidebar">
@@ -75,9 +92,7 @@
 
       <main class="calendar-main">
         <div class="calendar-header">
-          <button class="btn-icon" id="prevWeek">←</button>
-          <h2 id="weekDisplay">Tuần hiện tại</h2>
-          <button class="btn-icon" id="nextWeek">→</button>
+          <!-- Navigation moved to top -->
         </div>
 
         <div class="calendar-grid" id="calendarGrid">

@@ -1,6 +1,19 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  onSnapshot,
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCISk54t_1O9IJh9EiV06Jha2G8Rxu2w4c",
@@ -16,14 +29,24 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-let currentWeekOffset = 0;
+let currentDate = new Date();
+let currentViewMode = "week"; // "week" or "day"
 let userEvents = [];
-const HOUR_HEIGHT = 50; // Chiều cao mỗi ô giờ (khớp với CSS)
-const CATEGORY_COLORS = { meeting: "#ef4444", work: "#3b82f6", personal: "#22c55e", study: "#f59e0b", play: "#a855f7", appointment: "#ec4899" };
+const HOUR_HEIGHT = 50;
+const CATEGORY_COLORS = {
+  meeting: "#ef4444",
+  work: "#3b82f6",
+  personal: "#22c55e",
+  study: "#f59e0b",
+  play: "#a855f7",
+  appointment: "#ec4899",
+};
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    if (document.getElementById("userLink")) document.getElementById("userLink").textContent = user.email.split("@")[0];
+    if (document.getElementById("userLink"))
+      document.getElementById("userLink").textContent =
+        user.email.split("@")[0];
     listenToEvents(user.email);
   } else {
     window.location.href = "login.html";
@@ -43,27 +66,66 @@ function renderCalendar() {
   if (!calendarGrid) return;
   calendarGrid.innerHTML = "";
 
-  const weekDates = getWeekDates(currentWeekOffset);
-  const activeCategories = Array.from(document.querySelectorAll(".category-item input:checked")).map((cb) => cb.dataset.category);
+  const renderDates = getDatesToRender();
+  const activeCategories = Array.from(
+    document.querySelectorAll(".category-item input:checked"),
+  ).map((cb) => cb.dataset.category);
 
-  // 1. TẠO CỘT THỜI GIAN (Bên trái)
+  // Update Month/Year Header
+  if (renderDates.length > 0) {
+    const startDate = renderDates[0];
+    const endDate = renderDates[renderDates.length - 1];
+
+    // Header Text Logic
+    let titleText = "";
+    if (currentViewMode === "day") {
+      titleText = startDate.toLocaleDateString("vi-VN", {
+        weekday: "long",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    } else {
+      const startMonth = startDate.getMonth() + 1;
+      const startYear = startDate.getFullYear();
+      const endMonth = endDate.getMonth() + 1;
+      const endYear = endDate.getFullYear();
+
+      titleText = `Tháng ${startMonth}, ${startYear}`;
+      if (startYear !== endYear) {
+        titleText = `Tháng ${startMonth}, ${startYear} - ${endMonth}, ${endYear}`;
+      } else if (startMonth !== endMonth) {
+        titleText = `Tháng ${startMonth} - ${endMonth}, ${startYear}`;
+      }
+    }
+    const monthYearEl = document.getElementById("currentMonthYear");
+    if (monthYearEl) monthYearEl.textContent = titleText;
+  }
+
+  // Adjust Grid Columns for Day View
+  if (currentViewMode === "day") {
+    calendarGrid.style.gridTemplateColumns = "80px 1fr";
+  } else {
+    calendarGrid.style.gridTemplateColumns = "80px repeat(7, 1fr)";
+  }
+
+  // 1. TIME COLUMN
   const timeCol = document.createElement("div");
   timeCol.className = "time-column";
-  timeCol.innerHTML = '<div class="time-header-slot"></div>'; // Ô trống góc trên cùng bên trái
+  timeCol.innerHTML = '<div class="time-header-slot"></div>';
   for (let i = 0; i < 24; i++) {
     timeCol.innerHTML += `<div class="time-slot">${i}:00</div>`;
   }
   calendarGrid.appendChild(timeCol);
 
-  // 2. TẠO 7 CỘT NGÀY
-  weekDates.forEach((date) => {
+  // 2. DATE COLUMNS
+  renderDates.forEach((date) => {
     const dateStr = date.toISOString().split("T")[0];
     const isToday = date.toDateString() === new Date().toDateString();
 
     const dayCol = document.createElement("div");
     dayCol.className = `calendar-day ${isToday ? "today" : ""}`;
-    
-    // Header của ngày (Thứ + Ngày)
+
     let dayHTML = `
         <div class="day-header">
             <div class="day-name">${date.toLocaleDateString("vi-VN", { weekday: "short" })}</div>
@@ -71,32 +133,31 @@ function renderCalendar() {
         </div>
         <div class="day-events-container">
     `;
-    
-    // Tạo 24 ô lưới nền
+
     for (let i = 0; i < 24; i++) {
-        dayHTML += `<div class="hour-grid-cell"></div>`;
+      dayHTML += `<div class="hour-grid-cell"></div>`;
     }
-    dayHTML += `</div>`; // Đóng day-events-container
+    dayHTML += `</div>`;
     dayCol.innerHTML = dayHTML;
 
     const eventsContainer = dayCol.querySelector(".day-events-container");
-    const dayEvents = userEvents.filter((ev) => ev.date === dateStr && activeCategories.includes(ev.category));
+    const dayEvents = userEvents.filter(
+      (ev) => ev.date === dateStr && activeCategories.includes(ev.category),
+    );
 
     dayEvents.forEach((event) => {
       const evEl = document.createElement("div");
       evEl.className = `event-item`;
       evEl.style.borderLeft = `4px solid ${CATEGORY_COLORS[event.category]}`;
       evEl.style.background = `${CATEGORY_COLORS[event.category]}15`;
-      
-      // LOGIC TÍNH TOÁN VỊ TRÍ CHÍNH XÁC
-      const start = event.startTime.split(':').map(Number);
-      const end = event.endTime.split(':').map(Number);
+
+      const start = event.startTime.split(":").map(Number);
+      const end = event.endTime.split(":").map(Number);
 
       const startInMinutes = start[0] * 60 + start[1];
       const endInMinutes = end[0] * 60 + end[1];
       const duration = endInMinutes - startInMinutes;
 
-      // Tính vị trí top và height dựa trên HOUR_HEIGHT
       const topPos = (startInMinutes / 60) * HOUR_HEIGHT;
       const heightPos = (duration / 60) * HOUR_HEIGHT;
 
@@ -108,8 +169,8 @@ function renderCalendar() {
                 <div class="event-title">${event.title}</div>
             `;
       evEl.onclick = (e) => {
-          e.stopPropagation();
-          openEditModal(event);
+        e.stopPropagation();
+        openEditModal(event);
       };
       eventsContainer.appendChild(evEl);
     });
@@ -117,14 +178,75 @@ function renderCalendar() {
   });
 }
 
-// Các hàm xử lý Modal giữ nguyên logic cũ nhưng cập nhật ID khớp với HTML của bạn
+function getDatesToRender() {
+  const dates = [];
+  const tempDate = new Date(currentDate);
+
+  if (currentViewMode === "day") {
+    dates.push(new Date(tempDate));
+  } else {
+    // Week view: Find Monday
+    const day = tempDate.getDay();
+    const diff = tempDate.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(tempDate.setDate(diff));
+
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      dates.push(d);
+    }
+  }
+  return dates;
+}
+
+// Navigation Handlers
+document.getElementById("prevBtn").onclick = () => {
+  if (currentViewMode === "day") {
+    currentDate.setDate(currentDate.getDate() - 1);
+  } else {
+    currentDate.setDate(currentDate.getDate() - 7);
+  }
+  renderCalendar();
+};
+
+document.getElementById("nextBtn").onclick = () => {
+  if (currentViewMode === "day") {
+    currentDate.setDate(currentDate.getDate() + 1);
+  } else {
+    currentDate.setDate(currentDate.getDate() + 7);
+  }
+  renderCalendar();
+};
+
+document.getElementById("todayBtn").onclick = () => {
+  currentDate = new Date();
+  document.getElementById("jumpToDate").value = "";
+  renderCalendar();
+};
+
+document.getElementById("viewModeSelect").onchange = (e) => {
+  currentViewMode = e.target.value;
+  renderCalendar();
+};
+
+document.getElementById("jumpToDate").onchange = (e) => {
+  const selectedDate = new Date(e.target.value);
+  if (!isNaN(selectedDate)) {
+    currentDate = selectedDate;
+    renderCalendar();
+  }
+};
+
+// Modal Functions (Unchanged)
 let currentEditingEvent = null;
 
 window.openCreateModal = () => {
   currentEditingEvent = null;
   document.getElementById("eventForm").reset();
   document.getElementById("deleteEventBtn").style.display = "none";
-  document.getElementById("eventModal").style.display = "block";
+  document.getElementById("eventModal").style.display = "flex";
+  // Set Default Date in Form
+  document.getElementById("eventDate").valueAsDate = currentDate;
 };
 
 window.closeModal = () => {
@@ -146,7 +268,7 @@ function openEditModal(event) {
   document.getElementById("eventEndTime").value = event.endTime;
   document.getElementById("eventCategory").value = event.category;
   document.getElementById("deleteEventBtn").style.display = "block";
-  document.getElementById("eventModal").style.display = "block";
+  document.getElementById("eventModal").style.display = "flex";
 }
 
 document.getElementById("eventForm").onsubmit = async (e) => {
@@ -168,58 +290,6 @@ document.getElementById("eventForm").onsubmit = async (e) => {
   window.closeModal();
 };
 
-document.getElementById("prevWeek").onclick = () => { currentWeekOffset--; renderCalendar(); };
-document.getElementById("nextWeek").onclick = () => { currentWeekOffset++; renderCalendar(); };
 if (document.getElementById("createEventBtn")) {
-    document.getElementById("createEventBtn").onclick = window.openCreateModal;
+  document.getElementById("createEventBtn").onclick = window.openCreateModal;
 }
-
-function getWeekDates(offset) {
-  const now = new Date();
-  const day = now.getDay();
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1) + (offset * 7);
-  const monday = new Date(now.setDate(diff));
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    return d;
-  });
-}
-// 1. Thêm Event Listener cho ô chọn ngày (đặt trong hàm onAuthStateChanged hoặc setup)
-document.getElementById("jumpToDate").addEventListener("change", (e) => {
-    const selectedDate = new Date(e.target.value);
-    if (!isNaN(selectedDate)) {
-        goToDate(selectedDate);
-    }
-});
-
-// 2. Hàm tính toán lại Offset dựa trên ngày được chọn
-function goToDate(targetDate) {
-    const now = new Date();
-    
-    // Tính số mili giây chênh lệch
-    const diffInMs = targetDate - now;
-    // Chuyển đổi sang số ngày chênh lệch
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-    
-    // Tìm ngày đầu tuần của tuần hiện tại và tuần mục tiêu để tính offset chính xác
-    const currentMonday = getWeekDates(0)[0];
-    const targetMonday = new Date(targetDate);
-    const day = targetMonday.getDay();
-    const diffToMonday = targetMonday.getDate() - day + (day === 0 ? -6 : 1);
-    targetMonday.setDate(diffToMonday);
-    targetMonday.setHours(0, 0, 0, 0);
-    
-    const mondayDiffInMs = targetMonday - currentMonday;
-    currentWeekOffset = Math.round(mondayDiffInMs / (1000 * 60 * 60 * 24 * 7));
-    
-    renderCalendar();
-}
-
-// 3. (Tùy chọn) Cập nhật lại nút Today để reset cả ô chọn ngày
-const originalTodayBtn = document.getElementById("todayBtn").onclick;
-document.getElementById("todayBtn").onclick = () => {
-    document.getElementById("jumpToDate").value = ""; // Xóa ngày đã chọn
-    currentWeekOffset = 0;
-    renderCalendar();
-};
