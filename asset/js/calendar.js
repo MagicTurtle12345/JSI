@@ -185,3 +185,41 @@ function getWeekDates(offset) {
     return d;
   });
 }
+// 1. Thêm Event Listener cho ô chọn ngày (đặt trong hàm onAuthStateChanged hoặc setup)
+document.getElementById("jumpToDate").addEventListener("change", (e) => {
+    const selectedDate = new Date(e.target.value);
+    if (!isNaN(selectedDate)) {
+        goToDate(selectedDate);
+    }
+});
+
+// 2. Hàm tính toán lại Offset dựa trên ngày được chọn
+function goToDate(targetDate) {
+    const now = new Date();
+    
+    // Tính số mili giây chênh lệch
+    const diffInMs = targetDate - now;
+    // Chuyển đổi sang số ngày chênh lệch
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    
+    // Tìm ngày đầu tuần của tuần hiện tại và tuần mục tiêu để tính offset chính xác
+    const currentMonday = getWeekDates(0)[0];
+    const targetMonday = new Date(targetDate);
+    const day = targetMonday.getDay();
+    const diffToMonday = targetMonday.getDate() - day + (day === 0 ? -6 : 1);
+    targetMonday.setDate(diffToMonday);
+    targetMonday.setHours(0, 0, 0, 0);
+    
+    const mondayDiffInMs = targetMonday - currentMonday;
+    currentWeekOffset = Math.round(mondayDiffInMs / (1000 * 60 * 60 * 24 * 7));
+    
+    renderCalendar();
+}
+
+// 3. (Tùy chọn) Cập nhật lại nút Today để reset cả ô chọn ngày
+const originalTodayBtn = document.getElementById("todayBtn").onclick;
+document.getElementById("todayBtn").onclick = () => {
+    document.getElementById("jumpToDate").value = ""; // Xóa ngày đã chọn
+    currentWeekOffset = 0;
+    renderCalendar();
+};

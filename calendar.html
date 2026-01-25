@@ -21,6 +21,14 @@
         <li><a href="#" onclick="logout()">Đăng xuất</a></li>
       </ul>
     </nav>
+    <div class="view-navigation">
+    <button id="prevWeek" class="nav-btn">&lt;</button>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <h2 id="currentMonthYear">Tháng ..., 202x</h2>
+        <input type="date" id="jumpToDate" style="font-size: 12px; padding: 2px; border: 1px solid #ccc; border-radius: 4px; margin-top: 4px;">
+    </div>
+    <button id="nextWeek" class="nav-btn">&gt;</button>
+</div>
 
     <div class="calendar-layout">
       <aside class="calendar-sidebar">
